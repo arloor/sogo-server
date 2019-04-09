@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"github.com/arloor/sogo-server/mio"
@@ -12,7 +13,7 @@ import (
 )
 
 var localAddr = ":12345"
-var pathPrefix = "/target?"
+var pathPrefix = "/target?at="
 var hunxiaoHost = "127.0.0.1"         //如果host是这个，就代理到下面地网址
 var hunxiaoHostAddr = "arloor.com:80" //用于替换
 
@@ -41,7 +42,7 @@ func main() {
 }
 
 //头
-//POST /some HTTP/1.1
+//POST /target?goog:80 HTTP/1.1
 //Host: qtgwuehaoisdhuaishdaisuhdasiuhlassjd.com
 //Accept: */*
 //Content-Type: text/plain
@@ -49,14 +50,14 @@ func main() {
 //content-length: 447
 //
 //GET / HTTP/1.1  （负载）
-//Host: aaaaaaa.com
-//Connection: keep-alive
-//Cache-Control: max-age=0
-//Upgrade-Insecure-Requests: 1
-//User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36
-//Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3
-//Accept-Encoding: gzip, deflate
-//Accept-Language: zh,en;q=0.9,zh-CN;q=0.8
+////Host: aaaaaaa.com
+////Connection: keep-alive
+////Cache-Control: max-age=0
+////Upgrade-Insecure-Requests: 1
+////User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36
+////Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3
+////Accept-Encoding: gzip, deflate
+////Accept-Language: zh,en;q=0.9,zh-CN;q=0.8
 
 func handleClientConnnection(conn net.Conn) {
 	var serverConn net.Conn = nil
@@ -178,7 +179,11 @@ func read(clientConn net.Conn, redundancy []byte) (payload, redundancyRetain []b
 					path = parts[1]
 					version = parts[2]
 					if strings.HasPrefix(path, pathPrefix) {
-						target = path[len(pathPrefix):]
+						targettemp := path[len(pathPrefix):]
+						decodeBytes, decodeErr := base64.NewEncoding("abcdefghijpqrzABCKLMNOkDEFGHIJl345678mnoPQRSTUVstuvwxyWXYZ0129+/").DecodeString(targettemp)
+						if decodeErr == nil {
+							target = string(decodeBytes)
+						}
 					}
 
 					var headmap = make(map[string]string)
@@ -187,7 +192,7 @@ func read(clientConn net.Conn, redundancy []byte) (payload, redundancyRetain []b
 						headmap[headsplit[0]] = headsplit[1]
 					}
 					host = headmap["Host"]
-					log.Println("[前缀]", method, host, path, version)
+					log.Println("[前缀]", method, host, target, version)
 					if headmap["content-length"] == "" {
 						contentlength = 0
 					} else {
