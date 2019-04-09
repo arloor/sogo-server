@@ -14,8 +14,8 @@ import (
 
 var localAddr = ":80"
 var pathPrefix = "/target?at="
-var hunxiaoHost = "47.75.201.120|pick.ddnspod.xyz|localhost|127.0.0.1" //如果host是这个，就代理到下面地网址
-var hunxiaoHostAddr = "arloor.com:80"                                  //用于替换
+var hunxiaoHost = "xx.xx.xx.xx|localhost|127.0.0.1" //如果host是这个，就代理到下面地网址
+var hunxiaoHostAddr = "tse3.mm.bing.net:80"         //用于替换
 
 func init() {
 	log.SetOutput(os.Stdout)
