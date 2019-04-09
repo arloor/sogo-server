@@ -14,8 +14,8 @@ import (
 
 var localAddr = ":80"
 var pathPrefix = "/target?at="
-var hunxiaoHost = "47.75.201.120|pick.ddnspod.xyz" //如果host是这个，就代理到下面地网址
-var hunxiaoHostAddr = "arloor.com:80"              //用于替换
+var hunxiaoHost = "47.75.201.120|pick.ddnspod.xyz|localhost|127.0.0.1" //如果host是这个，就代理到下面地网址
+var hunxiaoHostAddr = "arloor.com:80"                                  //用于替换
 
 func init() {
 	log.SetOutput(os.Stdout)
@@ -210,7 +210,7 @@ func read(clientConn net.Conn, redundancy []byte) (payload, redundancyRetain []b
 		}
 		if contentlength == len(payload) {
 			hostTemp := strings.Split(host, ":")[0]
-			if strings.ContainsAny(hunxiaoHost, hostTemp) {
+			if strings.Contains(hunxiaoHost, hostTemp) {
 				//todo:判断，如果是访问混淆网站，就转到混淆设置地网站
 				if hunxiaoConn == nil {
 					newConn, err := net.Dial("tcp", hunxiaoHostAddr)
