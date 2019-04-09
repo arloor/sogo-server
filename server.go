@@ -14,8 +14,9 @@ import (
 
 var localAddr = ":80"
 var pathPrefix = "/target?at="
-var hunxiaoHost = "xx.xx.xx.xx|localhost|127.0.0.1" //如果host是这个，就代理到下面地网址
-var hunxiaoHostAddr = "tse3.mm.bing.net:80"         //用于替换
+var hunxiaoHostAddr = "www.grove.co.uk:80" //用于替换
+
+var fakeHost = "qtgwuehaoisdhuaishdaisuhdasiuhlassjd.com" //如果不是这个host，则到混淆网站
 
 func init() {
 	log.SetOutput(os.Stdout)
@@ -212,7 +213,8 @@ func read(clientConn net.Conn, redundancy []byte) (payload, redundancyRetain []b
 		}
 		if contentlength == len(payload) {
 			hostTemp := strings.Split(host, ":")[0]
-			if strings.Contains(hunxiaoHost, hostTemp) {
+			//if strings.Contains(hunxiaoHost, hostTemp)||!strings.Contains(hostTemp,"qtgwuehaoisdhuaishdaisuhdasiuhlassjd.com") {
+			if !strings.Contains(hostTemp, fakeHost) {
 				//todo:判断，如果是访问混淆网站，就转到混淆设置地网站
 				if hunxiaoConn == nil {
 					newConn, err := net.Dial("tcp", hunxiaoHostAddr)
