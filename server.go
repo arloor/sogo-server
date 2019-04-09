@@ -225,6 +225,8 @@ func read(clientConn net.Conn, redundancy []byte) (payload, redundancyRetain []b
 						go handleHunxiaoConn(hunxiaoConn, clientConn)
 					}
 				}
+				//更换host
+				prefix = []byte(strings.Replace(string(prefix), host, hunxiaoHostAddr, -1))
 				writeHunxiaoErr := mio.WriteAll(hunxiaoConn, append(append(prefix, []byte("\r\n\r\n")...), payload...))
 				if writeHunxiaoErr != nil {
 					hunxiaoConn.Close()
