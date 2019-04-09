@@ -189,7 +189,9 @@ func read(clientConn net.Conn, redundancy []byte) (payload, redundancyRetain []b
 					var headmap = make(map[string]string)
 					for i := 1; i < len(headrs); i++ {
 						headsplit := strings.Split(headrs[i], ": ")
-						headmap[headsplit[0]] = headsplit[1]
+						if len(headsplit) == 2 {
+							headmap[headsplit[0]] = headsplit[1]
+						}
 					}
 					host = headmap["Host"]
 					log.Println("[前缀]", method, host, target, version)
