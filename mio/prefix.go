@@ -24,8 +24,8 @@ import "strconv"
 //aaaaa
 
 func AppendHttpResponsePrefix(buf []byte) []byte {
-	//simple(&buf,len(buf))
-	buf = append(append([]byte("HTTP/1.1 200 OK\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Length: "), []byte(strconv.Itoa(len(buf))+"\r\n\r\n")...), buf...)
+	Simple(&buf, len(buf))
+	buf = append([]byte("HTTP/1.1 200 OK\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Length: "+strconv.Itoa(len(buf))+"\r\n\r\n"), buf...)
 	return buf
 }
 

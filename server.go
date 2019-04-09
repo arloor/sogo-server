@@ -13,8 +13,8 @@ import (
 
 var localAddr = ":12345"
 var pathPrefix = "/target?"
-var hunxiaoHost = "hknathosts.ddnspod.xyz" //如果host是这个，就代理到下面地网址
-var hunxiaoHostAddr = "arloor.com:80"      //用于替换
+var hunxiaoHost = "127.0.0.1"         //如果host是这个，就代理到下面地网址
+var hunxiaoHostAddr = "arloor.com:80" //用于替换
 
 func init() {
 	log.SetOutput(os.Stdout)
@@ -100,7 +100,7 @@ func handleClientConnnection(conn net.Conn) {
 
 func handleServerConn(serverConn net.Conn, clientConn net.Conn) {
 	//bufio.NewReader(serverConn).WriteTo(clientCon)//好像这句话是一样地作用
-	buf := make([]byte, 2048)
+	buf := make([]byte, 8196)
 	for {
 		num, readErr := serverConn.Read(buf)
 		if readErr != nil {
@@ -110,7 +110,7 @@ func handleServerConn(serverConn net.Conn, clientConn net.Conn) {
 			return
 		}
 
-		writeErr := mio.WriteAll(clientConn, buf[:num])
+		writeErr := mio.WriteAll(clientConn, mio.AppendHttpResponsePrefix(buf[:num]))
 		if writeErr != nil {
 			log.Print("writeErr ", writeErr)
 			clientConn.Close()
