@@ -14,8 +14,9 @@ import (
 
 var localAddr = ":80"
 var pathPrefix = "/target?at="
-var hunxiaoHostAddr = "www.grove.co.uk:80" //用于替换
 
+//var hunxiaoHostAddr = "www.grove.co.uk:80" //用于替换
+var hunxiaoHostAddr = "localhost:58000"                   //用于替换
 var fakeHost = "qtgwuehaoisdhuaishdaisuhdasiuhlassjd.com" //如果不是这个host，则到混淆网站
 
 func init() {
