@@ -10,7 +10,7 @@ import (
 )
 
 var configFilePath string = "sogo-server.json" //绝对路径或相对路径
-var auths = make([]string, 1)                  //允许的认证 base64{username:password}
+var auths = make([]string, 0)                  //允许的认证 base64{username:password}
 
 var localAddr string
 
