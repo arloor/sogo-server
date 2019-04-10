@@ -7,32 +7,19 @@ import (
 	"github.com/arloor/sogo-server/mio"
 	"log"
 	"net"
-	"os"
 	"strconv"
 	"strings"
 )
-
-var localAddr = ":80"
-var pathPrefix = "/target?at="
-
-var hunxiaoHostAddr = "www.grove.co.uk:80" //用于替换
-//var hunxiaoHostAddr = "localhost:58000"                   //用于替换
-var fakeHost = "qtgwuehaoisdhuaishdaisuhdasiuhlassjd.com" //如果不是这个host，则到混淆网站
-
-func init() {
-	log.SetOutput(os.Stdout)
-	log.SetFlags(log.Flags() | log.Lshortfile)
-}
 
 func main() {
 
 	ln, err := net.Listen("tcp", localAddr)
 	if err != nil {
-		log.Println("监听", localAddr, "失败 ", err)
+		fmt.Println("监听", localAddr, "失败 ", err)
 		return
 	}
 	defer ln.Close()
-	log.Println("成功监听 ", ln.Addr())
+	fmt.Println("成功监听 ", ln.Addr())
 	for {
 		c, err := ln.Accept()
 		if err != nil {
@@ -94,7 +81,7 @@ func handleClientConnnection(conn net.Conn) {
 				return
 			}
 		} else {
-			log.Println("已转发到混淆网站", hunxiaoHostAddr)
+			log.Println("已转发到混淆网站", redirctAddr)
 		}
 
 	}
@@ -137,6 +124,7 @@ func read(clientConn net.Conn, redundancy []byte) (payload, redundancyRetain []b
 	version := ""
 	target = ""
 	host := ""
+	auth := ""
 
 	var hunxiaoConn net.Conn = nil
 	for {
@@ -202,6 +190,7 @@ func read(clientConn net.Conn, redundancy []byte) (payload, redundancyRetain []b
 					} else {
 						contentlength, _ = strconv.Atoi(headmap["content-length"])
 					}
+					auth = headmap["Authorization"]
 				}
 			} else { //追加到payload
 				payload = append(payload, buf[:num]...)
@@ -218,7 +207,7 @@ func read(clientConn net.Conn, redundancy []byte) (payload, redundancyRetain []b
 			if !strings.Contains(hostTemp, fakeHost) {
 				//todo:判断，如果是访问混淆网站，就转到混淆设置地网站
 				if hunxiaoConn == nil {
-					newConn, err := net.Dial("tcp", hunxiaoHostAddr)
+					newConn, err := net.Dial("tcp", redirctAddr)
 					if err != nil {
 						return nil, nil, "", errors.New("连接到混淆网站失败，混淆网站应该挂了")
 					} else {
@@ -227,15 +216,20 @@ func read(clientConn net.Conn, redundancy []byte) (payload, redundancyRetain []b
 					}
 				}
 				//更换host
-				prefix = []byte(strings.Replace(string(prefix), host, hunxiaoHostAddr, -1))
+				prefix = []byte(strings.Replace(string(prefix), host, redirctAddr, -1))
 				writeHunxiaoErr := mio.WriteAll(hunxiaoConn, append(append(prefix, []byte("\r\n\r\n")...), payload...))
 				if writeHunxiaoErr != nil {
 					hunxiaoConn.Close()
 				}
 				return nil, redundancy, "", writeHunxiaoErr
 			}
-			//如果确实是代理，则返回
-			return payload, redundancy, target, nil
+			//如果确实是代理，并且auth字段正确，则返回
+			for _, cell := range auths {
+				if cell == auth {
+					return payload, redundancy, target, nil
+				}
+			}
+			return payload, redundancy, target, errors.New("错误的认证信息")
 		}
 	}
 }
