@@ -5,11 +5,7 @@
     {
       "UserName": "a",
       "Password": "b"
-    },
-    {
-      "UserName": "1",
-      "Password": "2"
     }
   ],
-  "Dev":true
+  "Dev":false
 }

@@ -4,13 +4,14 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/arloor/sogo/utils"
 	"log"
 	"os"
 	"strconv"
 )
 
-var configFilePath string = "sogo-server.json" //绝对路径或相对路径
-var auths = make([]string, 0)                  //允许的认证 base64{username:password}
+var configFilePath string = utils.GetWorkDir() + "sogo-server.json" //绝对路径或相对路径
+var auths = make([]string, 0)                                       //允许的认证 base64{username:password}
 
 var localAddr string
 
@@ -20,7 +21,7 @@ var redirctAddr = "www.grove.co.uk:80"                      //用于替换
 const fakeHost = "qtgwuehaoisdhuaishdaisuhdasiuhlassjd.com" //如果不是这个host，则到混淆网站
 
 func printUsage() {
-	fmt.Println("运行方式： sogo-server [-c  configFilePath ]  若不使用 -c指定配置文件，则默认使用当前目录下的sogo-server.json")
+	fmt.Println("运行方式： sogo-server [-c  configFilePath ]  若不使用 -c指定配置文件，则默认使用" + configFilePath)
 }
 
 type Info struct {
