@@ -67,7 +67,7 @@ func handleClientConnnection(conn net.Conn) {
 			//fmt.Println("<<end")
 			if serverConn == nil {
 				newConn, dialErr := net.Dial("tcp", target)
-				log.Println("[TO]", target, "[FROM]", conn.RemoteAddr())
+				log.Println(target, "---FROM---", conn.RemoteAddr())
 				if dialErr != nil {
 					log.Println("dialErr", target, dialErr)
 					return
@@ -83,7 +83,7 @@ func handleClientConnnection(conn net.Conn) {
 				return
 			}
 		} else {
-			log.Println("已转发到混淆网站", redirctAddr)
+			log.Println("已转发到混淆网站", redirctAddr, "---FROM---", conn.RemoteAddr())
 		}
 
 	}
