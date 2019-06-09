@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/arloor/sogo-server/mio"
+	"github.com/arloor/sogo/utils"
 	"log"
 	"net"
 	"strconv"
@@ -19,7 +20,7 @@ func main() {
 		return
 	}
 	defer ln.Close()
-	fmt.Println("成功监听 ", ln.Addr())
+	fmt.Println("成功监听 ", ln.Addr(), "日志在", utils.GetWorkDir()+"log.txt")
 	for {
 		c, err := ln.Accept()
 		if err != nil {
@@ -103,7 +104,7 @@ func handleServerConn(serverConn net.Conn, clientConn net.Conn) {
 
 		writeErr := mio.WriteAll(clientConn, mio.AppendHttpResponsePrefix(buf[:num]))
 		if writeErr != nil {
-			log.Print("writeErr ", writeErr)
+			//log.Print("writeErr ", writeErr)
 			clientConn.Close()
 			serverConn.Close()
 			return
@@ -241,14 +242,14 @@ func handleHunxiaoConn(hunxiaoConn, clientCon net.Conn) {
 	for {
 		num, readErr := hunxiaoConn.Read(buf)
 		if readErr != nil {
-			log.Print("readErr ", readErr, hunxiaoConn.RemoteAddr())
+			//log.Print("readErr ", readErr, hunxiaoConn.RemoteAddr())
 			clientCon.Close()
 			hunxiaoConn.Close()
 			return
 		}
 		writeErr := mio.WriteAll(clientCon, buf[:num])
 		if writeErr != nil {
-			log.Print("writeErr ", writeErr)
+			//log.Print("writeErr ", writeErr)
 			clientCon.Close()
 			hunxiaoConn.Close()
 			return
