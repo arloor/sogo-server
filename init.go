@@ -44,13 +44,16 @@ var Config = Info{
 }
 
 func init() {
+
 	printUsage()
 
 	if len(os.Args) == 3 && os.Args[1] == "-c" {
 		configFilePath = os.Args[2]
 	}
 
-	log.SetOutput(os.Stdout)
+	//log.SetOutput(os.Stdout)
+	logFile, _ := os.OpenFile(utils.GetWorkDir()+"log.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	log.SetOutput(logFile)
 	log.SetFlags(log.Lshortfile | log.Flags())
 	configinit()
 	log.Println("配置信息为：", Config)

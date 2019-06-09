@@ -58,7 +58,7 @@ func handleClientConnnection(conn net.Conn) {
 		payload, redundancyRetain, target, readErr := read(conn, redundancy)
 		redundancy = redundancyRetain
 		if readErr != nil {
-			log.Print("readErr", readErr)
+			//log.Print("readErr", readErr)
 			return
 		} else if target != "" {
 			//fmt.Print(string(payload))
@@ -66,6 +66,7 @@ func handleClientConnnection(conn net.Conn) {
 			//fmt.Println("<<end")
 			if serverConn == nil {
 				newConn, dialErr := net.Dial("tcp", target)
+				log.Println("[TO]", target, "[FROM]", conn.RemoteAddr())
 				if dialErr != nil {
 					log.Println("dialErr", target, dialErr)
 					return
@@ -94,7 +95,7 @@ func handleServerConn(serverConn net.Conn, clientConn net.Conn) {
 	for {
 		num, readErr := serverConn.Read(buf)
 		if readErr != nil {
-			log.Print("readErr ", readErr, serverConn.RemoteAddr())
+			//log.Print("readErr ", readErr, serverConn.RemoteAddr())
 			clientConn.Close()
 			serverConn.Close()
 			return
@@ -119,9 +120,9 @@ func read(clientConn net.Conn, redundancy []byte) (payload, redundancyRetain []b
 	//payload:=make([]byte,0)
 	buf := make([]byte, 512)
 
-	method := ""
+	//method := ""
 	path := ""
-	version := ""
+	//version := ""
 	target = ""
 	host := ""
 	auth := ""
@@ -140,7 +141,7 @@ func read(clientConn net.Conn, redundancy []byte) (payload, redundancyRetain []b
 		}
 
 		if readErr != nil {
-			log.Println("readErr", readErr)
+			//log.Println("readErr", readErr)
 			return nil, nil, "", readErr
 		} else if num <= 0 {
 			return nil, nil, "", errors.New("读到<=0字节，未预期地情况")
@@ -165,9 +166,9 @@ func read(clientConn net.Conn, redundancy []byte) (payload, redundancyRetain []b
 						}
 						return nil, nil, "", errors.New("不是以GET xx HTTP/1.1这种开头，说明上个请求有问题。")
 					}
-					method = parts[0]
+					//method = parts[0]
 					path = parts[1]
-					version = parts[2]
+					//version = parts[2]
 					if strings.HasPrefix(path, pathPrefix) {
 						targettemp := path[len(pathPrefix):]
 						decodeBytes, decodeErr := base64.NewEncoding("abcdefghijpqrzABCKLMNOkDEFGHIJl345678mnoPQRSTUVstuvwxyWXYZ0129+/").DecodeString(targettemp)
@@ -184,7 +185,7 @@ func read(clientConn net.Conn, redundancy []byte) (payload, redundancyRetain []b
 						}
 					}
 					host = headmap["Host"]
-					log.Println("[前缀]", method, host, target, version)
+					//log.Println("[前缀]", method, host, target, version)
 					if headmap["content-length"] == "" {
 						contentlength = 0
 					} else {
